@@ -1,0 +1,90 @@
+import csv
+
+inventory = {
+    'Ikan Lele': {'perssediaan': 50, 'harga': 15000},
+    'Ikan Bawal': {'perssediaan': 30, 'harga': 20000},
+    'Udang': {'perssediaan': 100, 'harga': 25000},
+}
+
+def tambah_perssediaan(nama_produk, jumlah):
+    if nama_produk in inventory:
+        inventory[nama_produk]['perssediaan'] += jumlah
+        print(f"Stok {nama_produk} berhasil ditambah sebanyak {jumlah}.")
+    else:
+        print("Barang tidak ditemukan.")
+
+def kurangi_perssediaan(nama_produk, jumlah):
+    if nama_produk in inventory:
+        if inventory[nama_produk]['perssediaan'] >= jumlah:
+            inventory[nama_produk]['perssediaan'] -= jumlah
+            print(f"Stok {nama_produk} berhasil dikurangi sebanyak {jumlah}.")
+        else:
+            print(f"Stok {nama_produk} tidak cukup.")
+    else:
+        print("Barang tidak ditemukan.")
+
+def peringatan_perssediaan_rendah():
+    for nama_produk, data in inventory.items():
+        if data['perssediaan'] < 10: 
+            print(f"Peringatan: Stok {nama_produk} rendah. Hanya tinggal {data['perssediaan']}.")
+
+def hitung_total_nilai():
+    total_nilai = 0
+    for data in inventory.values():
+        total_nilai += data['perssediaan'] * data['harga']
+    print(f"Total nilai produk dalam inventaris: Rp {total_nilai}")
+
+
+penjualan = []
+
+def catat_penjualan(nama_produk, jumlah):
+    if nama_produk in inventory and inventory[nama_produk]['perssediaan'] >= jumlah:
+        inventory[nama_produk]['perssediaan'] -= jumlah
+        penjualan.append({'produk': nama_produk, 'jumlah': jumlah, 'total_harga': jumlah * inventory[nama_produk]['harga']})
+        print(f"Penjualan {jumlah} {nama_produk} tercatat.")
+    else:
+        print("Stok tidak cukup atau produk tidak ditemukan.")
+
+def ekspor_data_penjualan():
+    with open('laporan_penjualan.csv', mode='w', newline='') as file:
+        writer = csv.DictWriter(file, fieldnames=['produk', 'jumlah', 'total_harga'])
+        writer.writeheader()
+        for transaksi in penjualan:
+            writer.writerow(transaksi)
+    print("Laporan penjualan berhasil diekspor ke 'laporan_penjualan.csv'.")
+
+while True:
+    print("\n=== Sistem Inventaris ===")
+    print("1. Tambah Stok")
+    print("2. Kurangi Stok")
+    print("3. Peringatan Stok Rendah")
+    print("4. Hitung Total Nilai Barang")
+    print("5. Catat Penjualan")
+    print("6. Ekspor Data Penjualan")
+    print("7. Keluar")
+
+    pilihan = input("Pilih opsi (1-7): ")
+
+    if pilihan == '1':
+        nama_produk = input("Masukkan nama produk: ")
+        jumlah = int(input("Masukkan jumlah yang ingin ditambah: "))
+        tambah_perssediaan(nama_produk, jumlah)
+    elif pilihan == '2':
+        nama_produk = input("Masukkan nama produk: ")
+        jumlah = int(input("Masukkan jumlah yang ingin dikurangi: "))
+        kurangi_perssediaan(nama_produk, jumlah)
+    elif pilihan == '3':
+        peringatan_perssediaan_rendah()
+    elif pilihan == '4':
+        hitung_total_nilai()
+    elif pilihan == '5':
+        nama_produk = input("Masukkan nama produk yang terjual: ")
+        jumlah = int(input("Masukkan jumlah yang terjual: "))
+        catat_penjualan(nama_produk, jumlah)
+    elif pilihan == '6':
+        ekspor_data_penjualan()
+    elif pilihan == '7':
+        print("Terima kasih! Program selesai.")
+        break
+    else:
+        print("Pilihan tidak valid.")
